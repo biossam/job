@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>요즘 환생 직업</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 768px;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        .btn:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: #6b7280;
+            box-shadow: none;
+        }
+        .btn-secondary:hover {
+            background-color: #e5e7eb;
+            transform: translateY(-2px);
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .input-group label {
+            font-weight: bold;
+            color: #4b5563;
+        }
+        .input-group input, .input-group select {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            transition: border-color 0.3s;
+            font-size: 1rem;
+        }
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+        }
+        .question-box {
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .question-box:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.1);
+        }
+        input[type="radio"] {
+            accent-color: #3b82f6;
+        }
+        .result-box {
+            background-color: #e3f2fd;
+            border: 2px solid #64b5f6;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .result-box h3 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1e88e5;
+            margin-bottom: 0.5rem;
+        }
+        .message-box {
+            background-color: #fff3e0;
+            color: #ff9800;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .message-box.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-blue-50 flex items-center justify-center p-8">
+    <div class="container mx-auto p-6 bg-white rounded-3xl shadow-2xl space-y-8 animate-fadeIn">
+        
+        <!-- Screen 1: Intro and Saju Input -->
+        <div id="intro-screen" class="text-center space-y-6">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800">요즘 환생 직업</h1>
+            <p class="text-gray-600 text-lg md:text-xl">
+                너에 대해 알려주면, 내가 직업을 정해줄게
+            </p>
+            <div class="input-section mt-6">
+                <div class="input-group">
+                    <label for="birth-year">출생 연도</label>
+                    <input type="number" id="birth-year" placeholder="예: 1990" class="w-full">
+                </div>
+                <div class="input-group">
+                    <label for="birth-month">출생 월</label>
+                    <input type="number" id="birth-month" placeholder="1 ~ 12" class="w-full">
+                </div>
+                <div class="input-group">
+                    <label for="birth-day">출생 일</label>
+                    <input type="number" id="birth-day" placeholder="1 ~ 31" class="w-full">
+                </div>
+                <div class="input-group">
+                    <label for="birth-hour">출생 시 (24시 기준)</label>
+                    <input type="number" id="birth-hour" placeholder="0 ~ 23" class="w-full">
+                </div>
+                <div id="saju-message" class="message-box hidden"></div>
+                <button id="saju-next-btn" class="btn w-full mt-4">다음</button>
+            </div>
+        </div>
+
+        <!-- Screen 2: Quiz -->
+        <div id="quiz-screen" class="hidden">
+            <h2 id="question-text" class="text-2xl font-bold text-gray-800 mb-6"></h2>
+            <div id="options-container" class="space-y-4"></div>
+            <div id="quiz-message" class="message-box hidden"></div>
+            <div class="flex justify-between mt-8">
+                <button id="prev-btn" class="btn btn-secondary hidden">이전</button>
+                <button id="next-btn" class="btn ml-auto">다음</button>
+            </div>
+        </div>
+
+        <!-- Screen 3: Result -->
+        <div id="result-screen" class="hidden text-center space-y-6">
+            <div class="result-box">
+                <p class="text-2xl font-semibold">당신의 종합 결과</p>
+                <h3 id="result-type" class="mt-2 text-3xl md:text-5xl font-extrabold animate-pulse"></h3>
+                <p id="combined-description" class="mt-4 text-base md:text-lg text-blue-900"></p>
+            </div>
+            <div id="result-details" class="text-left mt-8 space-y-6"></div>
+            <button id="restart-btn" class="btn mt-6">다시 분석하기</button>
+        </div>
+    </div>
+
+    <script>
+        // Data for simplified Saju analysis based on the Day Master (일간)
+        const dayMasters = {
+            '갑': '목(木)', '을': '목(木)', '병': '화(火)', '정': '화(火)',
+            '무': '토(土)', '기': '토(土)', '경': '금(金)', '신': '금(金)',
+            '임': '수(水)', '계': '수(水)'
+        };
+
+        const elementsData = {
+            '목(木)': {
+                name: '목(木) - 나무',
+                description: '진취적이고 창의적인 성향을 가졌습니다.',
+                professions: ['기획자', '디자이너', '교육자', '작가'],
+                warning: '너무 급하게 서두르거나 융통성 없는 모습을 보이지 않도록 주의하세요.'
+            },
+            '화(火)': {
+                name: '화(火) - 불',
+                description: '정열적이고 외향적인 성향을 가졌습니다.',
+                professions: ['강사', '예술가', '방송인', '연예인'],
+                warning: '감정 기복이 심해질 수 있으니 마음을 다스리는 노력이 필요합니다.'
+            },
+            '토(土)': {
+                name: '토(土) - 흙',
+                description: '안정적이고 신중한 성향을 가졌습니다.',
+                professions: ['공무원', '부동산', '금융인', '건축가'],
+                warning: '새로운 변화를 두려워하지 않고, 고집을 부리지 않도록 노력해야 합니다.'
+            },
+            '금(金)': {
+                name: '금(金) - 쇠',
+                description: '정의롭고 결단력이 강한 성향을 가졌습니다.',
+                professions: ['법조인', '군인', '의사', '엔지니어'],
+                warning: '때로는 너무 냉철하여 주변 사람들과의 관계가 소원해질 수 있으니 주의하세요.'
+            },
+            '수(水)': {
+                name: '수(水) - 물',
+                description: '지혜롭고 유연한 성향을 가졌습니다.',
+                professions: ['학자', '상담사', '연구원', '컨설턴트'],
+                warning: '속마음을 잘 드러내지 않아 오해를 받을 수 있으니, 솔직한 표현이 필요합니다.'
+            }
+        };
+
+        const bloodTypeData = {
+            'A': {
+                name: 'A형',
+                description: '신중하고 완벽주의 성향이 강하며, 책임감이 뛰어납니다.',
+                professions: ['공무원', '사서', '회계사', '교사']
+            },
+            'B': {
+                name: 'B형',
+                description: '자유분방하고 창의적인 성향이 강하며, 호기심이 많습니다.',
+                professions: ['예술가', '디자이너', '크리에이터', '기획자']
+            },
+            'O': {
+                name: 'O형',
+                description: '사교적이고 리더십이 뛰어나며, 목표를 향해 추진력이 좋습니다.',
+                professions: ['경영자', '영업사원', '방송인', '운동선수']
+            },
+            'AB': {
+                name: 'AB형',
+                description: '논리적이고 합리적인 성향으로, 분석적 사고에 능합니다.',
+                professions: ['과학자', '연구원', '프로그래머', '컨설턴트']
+            }
+        };
+
+        const constitutions = {
+            '소양인': {
+                name: '소양인 (少陽人)',
+                food: '돼지고기, 오이, 배추, 상추, 해삼, 굴, 보리',
+                exercise: '수영, 요가, 산책 등 몸의 열을 식혀주는 운동',
+            },
+            '태음인': {
+                name: '태음인 (太陰人)',
+                food: '쇠고기, 콩, 밀가루, 미역, 다시마, 무, 도라지, 율무',
+                exercise: '조깅, 등산, 헬스 등 땀을 많이 흘리는 운동',
+            },
+            '소음인': {
+                name: '소음인 (少陰人)',
+                food: '닭고기, 양고기, 꿀, 인삼, 생강, 대추, 사과',
+                exercise: '가벼운 걷기, 스트레칭, 요가 등 몸을 따뜻하게 하는 운동',
+            },
+            '태양인': {
+                name: '태양인 (太陽人)',
+                food: '메밀, 조개, 새우, 붕어, 문어, 포도',
+                exercise: '하체를 단련하는 걷기, 수영, 자전거 타기',
+            },
+            '한다형': {
+                name: '한다형 (寒多型)',
+                food: '따뜻한 성질의 음식 (닭고기, 꿀, 생강, 인삼)',
+                warning: '소화력이 약하고 손발이 차므로, 몸을 따뜻하게 하는 것이 중요합니다.'
+            },
+            '열다형': {
+                name: '열다형 (熱多型)',
+                food: '시원한 성질의 음식 (돼지고기, 오이, 해산물, 수박)',
+                warning: '더위를 잘 타고 스트레스에 민감하므로, 몸의 열을 내리는 노력이 필요합니다.'
+            }
+        };
+
+        const mbtiData = {
+            'ENTJ': {
+                description: '통솔력 있는 지도자형으로 비전을 제시하고 목표를 추진합니다.',
+                professions: ['사업가', '경영자', '정치인', '변호사']
+            },
+            'INTJ': {
+                description: '논리적이고 분석적인 사색가형으로 독창적인 아이디어와 통찰력을 가졌습니다.',
+                professions: ['과학자', '교수', '전략가', '연구원']
+            },
+            'ENTP': {
+                description: '지적인 호기심이 많고 다재다능한 발명가형입니다.',
+                professions: ['기업가', '컨설턴트', '마케팅 전문가', '프로듀서']
+            },
+            'INTP': {
+                description: '조용하고 탐구적인 사색가형으로 복잡한 문제 해결에 능합니다.',
+                professions: ['프로그래머', '학자', '물리학자', '건축가']
+            },
+            'ENFJ': {
+                description: '따뜻하고 책임감 있는 사회 운동가형으로 사람들과의 관계를 중요시합니다.',
+                professions: ['교육자', '상담사', '사회복지사', '인사 전문가']
+            },
+            'INFJ': {
+                description: '통찰력 있고 신념이 뚜렷한 예언자형으로 타인에게 영감을 줍니다.',
+                professions: ['작가', '예술가', '심리학자', '종교인']
+            },
+            'ENFP': {
+                description: '자유롭고 창의적인 활동가형으로 사람들과 어울리며 에너지를 얻습니다.',
+                professions: ['이벤트 기획자', '크리에이터', '저널리스트', '배우']
+            },
+            'INFP': {
+                description: '이상적이고 조화로운 중재자형으로 내면의 가치를 중요시합니다.',
+                professions: ['작가', '화가', '음악가', '상담사']
+            },
+            'ESTJ': {
+                description: '체계적이고 현실적인 사업가형으로 리더십이 뛰어납니다.',
+                professions: ['경영자', '행정가', '군인', '공무원']
+            },
+            'ISTJ': {
+                description: '신중하고 책임감이 강한 청렴결백한 논리주의자입니다.',
+                professions: ['회계사', '감사관', '경찰관', '공무원']
+            },
+            'ESFJ': {
+                description: '사교적이고 친절한 배려심 있는 수호자입니다.',
+                professions: ['교사', '사회복지사', '간호사', '영업사원']
+            },
+            'ISFJ': {
+                description: '헌신적이고 세심한 조력자형으로 타인을 잘 보살핍니다.',
+                professions: ['사서', '행정 사무원', '내과 의사', '교사']
+            },
+            'ESTP': {
+                description: '현실적이고 모험심 강한 사업가형으로 상황 대처 능력이 뛰어납니다.',
+                professions: ['소방관', '경찰', '운동선수', '영업사원']
+            },
+            'ISTP': {
+                description: '조용하고 호기심 많은 만능 재주꾼형입니다.',
+                professions: ['엔지니어', '기술자', '건축가', '파일럿']
+            },
+            'ESFP': {
+                description: '낙천적이고 에너지가 넘치는 자유로운 연예인입니다.',
+                professions: ['예술가', '유치원 교사', '레크리에이션 강사', '헤어 디자이너']
+            },
+            'ISFP': {
+                description: '예술적이고 감성적인 모험가형으로 자유로운 영혼을 가졌습니다.',
+                professions: ['미술가', '디자이너', '요리사', '음악가']
+            }
+        };
+
+        const questions = [
+            {
+                question: "당신의 혈액형은 무엇인가요?",
+                options: [
+                    { text: "A형", bloodType: 'A' },
+                    { text: "B형", bloodType: 'B' },
+                    { text: "O형", bloodType: 'O' },
+                    { text: "AB형", bloodType: 'AB' }
+                ]
+            },
+            {
+                question: "가장 많이 하는 외식은 무엇인가요?",
+                options: [
+                    { text: "한식 (따뜻하고 담백한 국물 요리)", score: { '소음인': 1, '한다형': 1 } },
+                    { text: "중식/양식 (기름지고 매운 요리)", score: { '태음인': 1, '열다형': 1 } },
+                    { text: "일식 (차가운 해산물, 회 등)", score: { '소양인': 1, '태양인': 1 } }
+                ]
+            },
+            {
+                question: "평소 선호하는 음식은?",
+                options: [
+                    { text: "따뜻하고 기름진 음식, 매운 음식", score: { '소음인': 1, '태음인': 1, '한다형': 1 } },
+                    { text: "찬 음식, 해산물, 채소", score: { '소양인': 1, '태양인': 1, '열다형': 1 } },
+                    { text: "육류, 밀가루, 튀김", score: { '태음인': 1 } },
+                    { text: "담백하고 시원한 음식, 해산물", score: { '태양인': 1 } }
+                ]
+            },
+            {
+                question: "당신이 가장 좋아하는 맛은?",
+                options: [
+                    { text: "신맛 (매실, 식초, 레몬 등)", score: { '소음인': 1, '태양인': 1 } },
+                    { text: "매운맛 (고추, 생강, 마늘 등)", score: { '소양인': 1, '태음인': 1 } },
+                    { text: "쓴맛 (고사리, 씀바귀, 커피 등)", score: { '소양인': 1, '태양인': 1, '열다형': 1 } },
+                    { text: "단맛 (꿀, 설탕, 엿기름 등)", score: { '소음인': 1, '태음인': 1, '한다형': 1 } }
+                ]
+            },
+            {
+                question: "여름에 더위를 많이 타는 편인가요?",
+                options: [
+                    { text: "매우 그렇다. 땀을 많이 흘리고 더위를 참기 힘들다.", score: { '소양인': 2, '열다형': 2 } },
+                    { text: "그런 편이다. 더위를 타긴 하지만 심하진 않다.", score: { '태양인': 1, '열다형': 1 } },
+                    { text: "그렇지 않다. 추위를 더 많이 탄다.", score: { '소음인': 2, '한다형': 2 } },
+                    { text: "별로 그렇지 않다. 더위나 추위 모두 잘 견딘다.", score: { '태음인': 1, '한다형': 1 } }
+                ]
+            },
+            {
+                question: "새로운 사람들과 함께하는 파티에 갔을 때 당신은?",
+                options: [
+                    { text: "새로운 사람들에게 적극적으로 다가가 대화를 시작한다.", score: { 'E': 1 } },
+                    { text: "조용히 아는 사람 옆에 있거나 혼자 음료를 마시며 관찰한다.", score: { 'I': 1 } }
+                ]
+            },
+            {
+                question: "친구와 여행 계획을 짤 때 당신은?",
+                options: [
+                    { text: "여행지 주변의 맛집과 명소를 꼼꼼히 조사하고 동선을 계획한다.", score: { 'S': 1 } },
+                    { text: "큰 틀만 정하고 즉흥적으로 새로운 장소를 탐험하며 자유롭게 즐긴다.", score: { 'N': 1 } }
+                ]
+            },
+            {
+                question: "친구의 고민 상담을 해줄 때 당신은?",
+                options: [
+                    { text: "객관적인 상황 분석을 통해 논리적이고 현실적인 해결책을 제시한다.", score: { 'T': 1 } },
+                    { text: "친구가 느낄 감정에 공감하며 정서적 위로를 먼저 건넨다.", score: { 'F': 1 } }
+                ]
+            },
+            {
+                question: "마감이 얼마 남지 않은 프로젝트를 진행할 때 당신은?",
+                options: [
+                    { text: "계획대로 순서에 맞춰 체계적으로 처리하며 중간 점검을 철저히 한다.", score: { 'J': 1 } },
+                    { text: "상황에 따라 유연하게 작업 순서를 바꾸며 마감 직전까지 수정한다.", score: { 'P': 1 } }
+                ]
+            }
+        ];
+
+        // DOM elements
+        const introScreen = document.getElementById('intro-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const sajuNextBtn = document.getElementById('saju-next-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const sajuMessage = document.getElementById('saju-message');
+        const quizMessage = document.getElementById('quiz-message');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const resultType = document.getElementById('result-type');
+        const combinedDescription = document.getElementById('combined-description');
+        const resultDetails = document.getElementById('result-details');
+
+        // State variables
+        let currentQuestionIndex = 0;
+        let scores = { 
+            '소양인': 0, '태음인': 0, '소음인': 0, '태양인': 0, '한다형': 0, '열다형': 0,
+            'E': 0, 'I': 0, 'S': 0, 'N': 0, 'T': 0, 'F': 0, 'J': 0, 'P': 0
+        };
+        let sajuResult = '';
+        let bloodTypeResult = '';
+
+        // Event Listeners
+        sajuNextBtn.addEventListener('click', handleSajuInput);
+        nextBtn.addEventListener('click', handleNext);
+        prevBtn.addEventListener('click', handlePrev);
+        restartBtn.addEventListener('click', restartApp);
+
+        function showMessage(msg, targetElement) {
+            targetElement.textContent = msg;
+            targetElement.classList.remove('hidden');
+            targetElement.classList.add('show');
+            setTimeout(() => {
+                targetElement.classList.remove('show');
+                targetElement.classList.add('hidden');
+            }, 3000);
+        }
+
+        function getDayMaster(year, month, day) {
+            const date = new Date(year, month - 1, day);
+            const baseDate = new Date(1900, 0, 1);
+            const diffInDays = Math.floor((date - baseDate) / (1000 * 60 * 60 * 24));
+            const cycleIndex = (diffInDays + 2) % 60;
+            const celestialStems = ['갑', '을', '병', '정', '무', '기', '경', '신', '임', '계'];
+            return celestialStems[cycleIndex % 10];
+        }
+
+        function handleSajuInput() {
+            const year = parseInt(document.getElementById('birth-year').value);
+            const month = parseInt(document.getElementById('birth-month').value);
+            const day = parseInt(document.getElementById('birth-day').value);
+            const hour = parseInt(document.getElementById('birth-hour').value);
+
+            if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hour) || 
+                month < 1 || month > 12 || day < 1 || day > 31 || hour < 0 || hour > 23) {
+                showMessage('모든 정보를 정확하게 입력해주세요.', sajuMessage);
+                return;
+            }
+
+            try {
+                const dayMaster = getDayMaster(year, month, day);
+                sajuResult = dayMasters[dayMaster];
+                introScreen.classList.add('hidden');
+                quizScreen.classList.remove('hidden');
+                renderQuestion();
+            } catch (e) {
+                showMessage('분석 중 오류가 발생했습니다. 다시 시도해주세요.', sajuMessage);
+                console.error(e);
+            }
+        }
+
+        function renderQuestion() {
+            if (currentQuestionIndex < 0) {
+                currentQuestionIndex = 0;
+            }
+            if (currentQuestionIndex >= questions.length) {
+                showResult();
+                return;
+            }
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionText.textContent = `Q${currentQuestionIndex + 1}. ${currentQuestion.question}`;
+            optionsContainer.innerHTML = '';
+            
+            prevBtn.classList.toggle('hidden', currentQuestionIndex === 0);
+            nextBtn.textContent = currentQuestionIndex === questions.length - 1 ? '결과보기' : '다음';
+            quizMessage.classList.add('hidden');
+
+            currentQuestion.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.classList.add('question-box', 'flex', 'items-center', 'space-x-3', 'cursor-pointer', 'hover:border-blue-400', 'transition', 'duration-300');
+                
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.id = `option${index}`;
+                radio.name = `question${currentQuestionIndex}`;
+                // Handle different value types for scores and blood type
+                if (option.score) {
+                    radio.value = JSON.stringify(option.score);
+                } else if (option.bloodType) {
+                    radio.value = option.bloodType;
+                }
+                
+                radio.classList.add('w-5', 'h-5', 'cursor-pointer');
+                
+                const label = document.createElement('label');
+                label.htmlFor = `option${index}`;
+                label.textContent = option.text;
+                label.classList.add('text-gray-700', 'text-lg', 'flex-grow', 'cursor-pointer');
+                
+                optionDiv.append(radio, label);
+                optionsContainer.append(optionDiv);
+                optionDiv.addEventListener('click', () => radio.checked = true);
+            });
+        }
+
+        function handleNext() {
+            const selectedOption = document.querySelector(`input[name="question${currentQuestionIndex}"]:checked`);
+            if (selectedOption) {
+                const currentQuestion = questions[currentQuestionIndex];
+                if (currentQuestion.options[0].bloodType) {
+                    // This is the blood type question
+                    bloodTypeResult = selectedOption.value;
+                } else {
+                    // This is a scoring question
+                    const scoreDelta = JSON.parse(selectedOption.value);
+                    for (const type in scoreDelta) {
+                        scores[type] += scoreDelta[type];
+                    }
+                }
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                showMessage('답변을 선택해주세요!', quizMessage);
+            }
+        }
+
+        function handlePrev() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function getMbtiResult() {
+            let mbti = '';
+            mbti += scores['E'] > scores['I'] ? 'E' : 'I';
+            mbti += scores['S'] > scores['N'] ? 'S' : 'N';
+            mbti += scores['T'] > scores['F'] ? 'T' : 'F';
+            mbti += scores['J'] > scores['P'] ? 'J' : 'P';
+            return mbti;
+        }
+
+        function getCombinedProfessions(professionsList) {
+            const allProfessions = professionsList.flat();
+            const professionCounts = allProfessions.reduce((acc, p) => {
+                acc[p] = (acc[p] || 0) + 1;
+                return acc;
+            }, {});
+
+            // Sort professions by how many categories they appear in
+            const sortedProfessions = Object.entries(professionCounts)
+                .sort(([, countA], [, countB]) => countB - countA)
+                .map(([profession]) => profession);
+
+            // Return top 3 unique professions
+            return [...new Set(sortedProfessions)].slice(0, 3);
+        }
+
+        function showResult() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            // Find max score for Sa-sang and Han-yeol
+            let maxSaSangScore = 0;
+            let saSangResult = '';
+            ['소양인', '태음인', '소음인', '태양인'].forEach(type => {
+                if (scores[type] > maxSaSangScore) {
+                    maxSaSangScore = scores[type];
+                    saSangResult = type;
+                }
+            });
+
+            let maxHanYeolScore = 0;
+            let hanYeolResult = '';
+            ['한다형', '열다형'].forEach(type => {
+                if (scores[type] > maxHanYeolScore) {
+                    maxHanYeolScore = scores[type];
+                    hanYeolResult = type;
+                }
+            });
+            
+            const mbtiResult = getMbtiResult();
+            const sajuData = elementsData[sajuResult];
+            const saSangData = constitutions[saSangResult];
+            const hanYeolData = constitutions[hanYeolResult];
+            const bloodTypeDataResult = bloodTypeData[bloodTypeResult];
+            const mbtiDataResult = mbtiData[mbtiResult];
+
+            // Combine professions from all four analyses
+            const combinedProfessions = getCombinedProfessions([
+                sajuData.professions,
+                saSangData.professions, // 사상체질 직업은 따로 없어서 제거하거나, 새로운 데이터를 추가해야 함
+                bloodTypeDataResult.professions,
+                mbtiDataResult.professions
+            ]);
+
+            const professionListHtml = combinedProfessions.map((p, index) => `<li class="font-bold text-lg text-gray-700">${index + 1}. ${p}</li>`).join('');
+
+            resultType.textContent = `${sajuData.name} - ${saSangData.name} - ${bloodTypeDataResult.name} - ${mbtiResult}`;
+            combinedDescription.textContent = mbtiDataResult.description;
+            
+            resultDetails.innerHTML = `
+                <div class="space-y-4">
+                    <div class="p-5 rounded-2xl bg-gray-100 border border-gray-200">
+                        <h4 class="text-xl font-bold mb-2 text-gray-800">💼 당신에게 가장 유력한 직업 3가지</h4>
+                        <ul class="list-disc list-inside space-y-2">
+                           ${professionListHtml}
+                        </ul>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-gray-100 border border-gray-200">
+                        <h4 class="text-xl font-bold mb-2 text-gray-800">✅ 분석 결과</h4>
+                        <p class="text-gray-600 mt-2"><strong>음양오행:</strong> ${sajuData.description}</p>
+                        <p class="text-gray-600 mt-2"><strong>사상체질:</strong> ${saSangData.name}</p>
+                        <p class="text-gray-600 mt-2"><strong>혈액형:</strong> ${bloodTypeDataResult.description}</p>
+                        <p class="text-gray-600 mt-2"><strong>MBTI 유형:</strong> ${mbtiDataResult.description}</p>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-gray-100 border border-gray-200">
+                        <h4 class="text-xl font-bold mb-2 text-gray-800">✅ 추천 음식</h4>
+                        <p class="text-gray-600"><strong>${saSangData.name}:</strong> ${saSangData.food}</p>
+                        <p class="text-gray-600 mt-2"><strong>${hanYeolData.name}:</strong> ${hanYeolData.food}</p>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-gray-100 border border-gray-200">
+                        <h4 class="text-xl font-bold mb-2 text-gray-800">🏃‍♀️ 추천 운동</h4>
+                        <p class="text-gray-600"><strong>${saSangData.name}:</strong> ${saSangData.exercise}</p>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-red-100 border-2 border-red-300">
+                        <h4 class="text-xl font-bold mb-2 text-red-800">⚠️ 주의할 점</h4>
+                        <p class="text-red-600"><strong>${sajuData.name}:</strong> ${sajuData.warning}</p>
+                        <p class="text-red-600 mt-2"><strong>${hanYeolData.name}:</strong> ${hanYeolData.warning}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function restartApp() {
+            resultScreen.classList.add('hidden');
+            introScreen.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            scores = { '소양인': 0, '태음인': 0, '소음인': 0, '태양인': 0, '한다형': 0, '열다형': 0,
+                        'E': 0, 'I': 0, 'S': 0, 'N': 0, 'T': 0, 'F': 0, 'J': 0, 'P': 0 };
+            document.getElementById('birth-year').value = '';
+            document.getElementById('birth-month').value = '';
+            document.getElementById('birth-day').value = '';
+            document.getElementById('birth-hour').value = '';
+        }
+    </script>
+</body>
+</html>
+
